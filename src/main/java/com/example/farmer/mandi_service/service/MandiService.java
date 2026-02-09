@@ -27,21 +27,30 @@ public class MandiService {
             String commodity) {
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("https")
-                        .host("api.data.gov.in")
-                        .path("/resource/35985678-0d79-46b4-9ed6-6f13308a1d24")
-                        .queryParam("api-key", API_KEY)
-                        .queryParam("format", "json")
-//                        .queryParam("limit", 10)
-                        .queryParam("filters[State]", state)
-                        .queryParam("filters[Commodity]", commodity)
-                        .build())
+                .uri(uriBuilder -> {
+
+                    var uri = uriBuilder
+                            .scheme("https")
+                            .host("api.data.gov.in")
+                            .path("/resource/35985678-0d79-46b4-9ed6-6f13308a1d24")
+                            .queryParam("api-key", API_KEY)
+                            .queryParam("format", "json")
+                            .queryParam("offset", 5)
+                            .queryParam("limit", 10)
+                            .queryParam("filters[State]", state)
+                            .queryParam("filters[Commodity]", commodity)
+                            .build();
+
+                    System.out.println("API URL = " + uri);
+
+                    return uri;
+                })
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(MandiApiResponse.class)
                 .map(this::toFinalResponse);
     }
+
 
     private List<MandiResponse> toFinalResponse(
             MandiApiResponse apiResponse) {
